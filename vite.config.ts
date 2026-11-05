@@ -26,6 +26,12 @@ function apiProxy(prefix: string, target: string): ProxyOptions {
 
 export default defineConfig(({ mode, isSsrBuild }) => {
   const env = loadEnv(mode, process.cwd(), "");
+  // Local runs listen on 127.0.0.1 only. A hosted workspace (v0, Codespaces, a container) sets PORT
+  // and reaches the server through its own domain, so then listen on all interfaces and accept that
+  // host. HOST overrides the address explicitly.
+  const hosted = Boolean(env.PORT) && !env.HOST;
+  const host = env.HOST || (hosted ? "0.0.0.0" : "127.0.0.1");
+  const allowedHosts = host === "127.0.0.1" || host === "localhost" ? undefined : true;
   const root = (file: string) => fileURLToPath(new URL(file, import.meta.url));
   const proxy = {
     "/lifewatch-api": apiProxy("/lifewatch-api", env.LIFEWATCH_API_URL || "http://127.0.0.1:8000"),
@@ -37,8 +43,8 @@ export default defineConfig(({ mode, isSsrBuild }) => {
     base: env.BASE_PATH || "/",
     plugins: [react(), tailwindcss()],
     resolve: { alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) } },
-    server: { host: "127.0.0.1", port: 5173, proxy },
-    preview: { host: "127.0.0.1", port: 4173, proxy },
+    server: { host, port: Number(env.PORT) || 5173, allowedHosts, proxy },
+    preview: { host, port: Number(env.PORT) || 4173, allowedHosts, proxy },
     build: {
       target: "es2022",
       sourcemap: !isSsrBuild,

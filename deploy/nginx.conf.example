@@ -1,8 +1,8 @@
 # LifeWatch România behind nginx: one origin for the public site, the LTSER Explorer and both APIs.
 #
 # The browser only talks to this server, so the APIs need no CORS settings.
-# The prefixes match the defaults in frontend/public/runtime-config.js and the Vite dev proxy.
-# Build first: cd frontend && npm ci && npm run build  (output in frontend/dist).
+# The prefixes match the defaults in public/runtime-config.js and the Vite dev proxy.
+# Build first, from the repository root: npm ci && npm run build  (output in dist/).
 # Optional: SITE_ORIGIN=https://lifewatch.ro npm run build  also writes dist/sitemap.xml.
 #
 # Layout of dist/:
@@ -17,7 +17,7 @@ server {
     listen 80;
     server_name ltser.example.ro;
 
-    root /srv/ltser/frontend/dist;
+    root /srv/ltser/dist;
     index index.html;
 
     # Public site: every page is a prerendered file, /despre/ is served from /despre/index.html.

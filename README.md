@@ -25,8 +25,8 @@ Fiecare stație, platformă și set de date are legături directe către ecranul
 explorator (de exemplu `/explorator/#/retele/meteo?statie=MH-Ors`). Căutarea `⌘K` acoperă
 pagini, stații, platforme, seturi de date și întrebări, fără să țină cont de diacritice.
 
-Conținutul se editează în `frontend/src/site/content/` (organizație, stații, platforme,
-proiecte, date și API, întrebări). Paginile noi se adaugă în `frontend/src/site/routes.tsx`.
+Conținutul se editează în `src/site/content/` (organizație, stații, platforme,
+proiecte, date și API, întrebări). Paginile noi se adaugă în `src/site/routes.tsx`.
 
 ## LTSER Explorer
 
@@ -55,7 +55,6 @@ aplicația trece automat pe **date demonstrative** generate local, cu aceleași 
 Este nevoie de Node.js 20 sau mai nou.
 
 ```bash
-cd frontend
 npm ci
 npm run dev
 ```
@@ -63,13 +62,16 @@ npm run dev
 Site-ul pornește la <http://127.0.0.1:5173/>, exploratorul la
 <http://127.0.0.1:5173/explorator/>. Serverul Vite face și proxy:
 `/lifewatch-api/` către `http://127.0.0.1:8000`, `/ltser-api/` către
-`http://127.0.0.1:8001/api/v1`. Pentru alte adrese, copiați `frontend/.env.example` în
-`frontend/.env.local` și modificați valorile.
+`http://127.0.0.1:8001/api/v1`. Pentru alte adrese, copiați `.env.example` în
+`.env.local` și modificați valorile.
+
+Local, serverul ascultă doar pe `127.0.0.1:5173`. Într-un mediu găzduit (v0, Codespaces, un
+container) care setează variabila `PORT`, ascultă pe toate interfețele și acceptă domeniul
+mediului. `HOST` și `PORT` se pot seta și explicit.
 
 ## Build și instalare
 
 ```bash
-cd frontend
 npm run build
 ```
 
@@ -78,11 +80,11 @@ build SSR al site-ului și scriptul `scripts/prerender.mjs`, care scrie câte un
 pentru fiecare pagină, plus `404.html`. Cu `SITE_ORIGIN=https://domeniu.ro npm run build`
 se generează și `sitemap.xml`. Cu `BASE_PATH=/subcale/` totul se servește dintr-o subcale.
 
-Rezultatul static este în `frontend/dist`. Configurația nginx completă, cu proxy către cele
+Rezultatul static este în `dist`. Configurația nginx completă, cu proxy către cele
 două servicii, pagina 404 și cache potrivit pentru fișierele cu hash, este în
 [deploy/nginx.conf.example](deploy/nginx.conf.example).
 
-La instalare se editează doar `dist/runtime-config.js` (sursa: `frontend/public/runtime-config.js`):
+La instalare se editează doar `dist/runtime-config.js` (sursa: `public/runtime-config.js`):
 adresele serviciilor, modul de lucru (`auto`, `live`, `demo`) și hărțile de bază. Pentru o
 singură vizită, `?mod=demo` sau `?mod=live` în adresa paginii suprascrie modul.
 
@@ -108,7 +110,7 @@ Interfața exploratorului este în română și engleză.
 
 Paleta vine din sigla LifeWatch ERIC: bleumarin `#254380` (culoarea principală), portocaliu
 `#D55A2B`, verde `#398346`, turcoaz `#4AA4A6` și nisipiu `#E49950`. Tokenurile sunt în
-`frontend/src/index.css` (`--brand-*`, utilitarele `bg-brand-green`, `text-brand-orange` etc.).
+`src/index.css` (`--brand-*`, utilitarele `bg-brand-green`, `text-brand-orange` etc.).
 Seriile din grafice și culorile rețelelor de stații folosesc aceeași paletă.
 
 Site-ul și exploratorul au mod luminos și întunecat. Alegerea se face din butonul din antet,
@@ -132,20 +134,20 @@ Exporturile Excel, GeoTIFF, GeoJSON, CSV și PNG sunt generate în browser.
 ## Structura
 
 ```
-frontend/
-  index.html                pagina site-ului (șablon pentru prerandare)
-  explorator/index.html     pagina exploratorului
-  scripts/prerender.mjs     scrie HTML static pentru fiecare pagină a site-ului
-  public/                   runtime-config.js, favicon, geometrii LTSER și UAT, stațiile rețelelor
-  src/
-    site/                   site-ul public: router pe căi, pagini, conținut, componente, intrări client și SSR
-    api/                    clienți tipizați (lifewatch.ts, ltser.ts), stare servicii, date demonstrative (mock/)
-    components/ui/          primitive: button, card, select, segmented, dialog, popover, tooltip, photo
-    components/map/         Leaflet în React: straturi, legendă, raster reproiectat
-    components/charts/      panou de serii de timp (Recharts) și sparkline
-    components/             înveliș, paletă de comenzi, tabel de date, selector de timp
-    lib/                    palete, geometrie, formatare, exporturi, i18n, catalog, fotografii
-    views/                  câte un fișier pentru fiecare ecran
+index.html                  pagina site-ului (șablon pentru prerandare)
+explorator/index.html       pagina exploratorului
+scripts/prerender.mjs       scrie HTML static pentru fiecare pagină a site-ului
+scripts/make_basemap.py     generează contururile României și ale vecinilor pentru hărțile SVG
+public/                     runtime-config.js, favicon, geometrii LTSER și UAT, stațiile rețelelor
+src/
+  site/                     site-ul public: router pe căi, pagini, conținut, componente, intrări client și SSR
+  api/                      clienți tipizați (lifewatch.ts, ltser.ts), stare servicii, date demonstrative (mock/)
+  components/ui/            primitive: button, card, select, segmented, dialog, popover, tooltip, photo
+  components/map/           Leaflet în React: straturi, legendă, raster reproiectat
+  components/charts/        panou de serii de timp (Recharts) și sparkline
+  components/               înveliș, paletă de comenzi, tabel de date, selector de timp
+  lib/                      palete, geometrie, formatare, exporturi, i18n, catalog, fotografii
+  views/                    câte un fișier pentru fiecare ecran
 docs/API_CONTRACT.md        contractul serviciului LTSER
 deploy/nginx.conf.example   configurație nginx pentru producție
 ```
@@ -154,7 +156,7 @@ deploy/nginx.conf.example   configurație nginx pentru producție
 
 Hărțile SVG ale site-ului și ilustrația din prezentarea exploratorului desenează România, țările
 vecine și Marea Neagră după granițele Natural Earth 1:50m (domeniu public). Contururile sunt
-precalculate în `frontend/src/lib/basemap.ts` de `frontend/scripts/make_basemap.py`, cu aceeași
+precalculate în `src/lib/basemap.ts` de `scripts/make_basemap.py`, cu aceeași
 proiecție ca hărțile; scriptul se rulează din nou doar dacă se schimbă cadrul hărții.
 
 Hărțile Leaflet din explorator folosesc câte un strat de fundal pentru fiecare temă și le comută
@@ -165,12 +167,12 @@ fracționar, iar serverul Esri le servea pentru altă zonă.
 
 Fotografiile zonelor și ale stațiilor provin de pe Unsplash și sunt folosite sub licența
 Unsplash. Locația fiecăreia a fost verificată pe pagina fotografiei. Autorul și locația sunt
-în `frontend/src/lib/photos.ts` și pe pagina „Despre” a site-ului. Pentru stații se pot folosi
+în `src/lib/photos.ts` și pe pagina „Despre” a site-ului. Pentru stații se pot folosi
 oricând fotografii proprii: se înlocuiesc intrările din `STATION_PHOTOS`.
 
 ## Corecturi aplicate datelor stațiilor
 
-`frontend/public/data/networks.json` provine din fișierele `*.geojson` ale aplicației Shiny, cu:
+`public/data/networks.json` provine din fișierele `*.geojson` ale aplicației Shiny, cu:
 
 - redenumirile din `global.R`: `IF-Cor` afișat ca `GR-Mih` (Mihăilești, Giurgiu) și `IF-Ste`
   ca `IL-Lil` (Lilieci, Ialomița); câmpul `dataId` păstrează codul din date;

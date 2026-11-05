@@ -10,8 +10,8 @@ The web interface talks to two HTTP services.
    application [alexdum/ltser](https://github.com/alexdum/ltser), which today reads NetCDF,
    Parquet and image files from its own disk. **This service does not exist yet.** Until it
    does, the frontend generates demonstration data with exactly these shapes
-   (`frontend/src/api/mock/ltser-mock.ts` is a working, typed reference implementation;
-   the response types are in `frontend/src/api/types.ts`).
+   (`src/api/mock/ltser-mock.ts` is a working, typed reference implementation;
+   the response types are in `src/api/types.ts`).
 
 All endpoints are `GET`, return JSON (`application/json`) unless stated otherwise, and live
 under a base URL such as `https://ltser.example.ro/api/v1`. Errors use the FastAPI shape
@@ -185,7 +185,7 @@ The media base URL is configurable (`mediaBaseUrl`) if images live on another ho
 
 ## 5. Station metadata (Shiny tab "Lifewatch networks / Metadata")
 
-Station positions and attributes ship with the frontend (`frontend/public/data/networks.json`,
+Station positions and attributes ship with the frontend (`public/data/networks.json`,
 built from the `*.geojson` files of the Shiny app). Only the photos come from the backend:
 
 `GET /media/meta/{network}/{Name}.png`, the same tree as `www/data/img/meta/`.
@@ -221,14 +221,14 @@ The browser never calls the services directly. The page requests `/lifewatch-api
 
 | Prefix | Forwarded to | Development | Production |
 | --- | --- | --- | --- |
-| `/lifewatch-api/` | LifeWatch FastAPI root | Vite, `LIFEWATCH_API_URL` in `frontend/.env.local` | `deploy/nginx.conf.example` |
-| `/ltser-api/` | LTSER API base (`/api/v1`) | Vite, `LTSER_API_URL` in `frontend/.env.local` | `deploy/nginx.conf.example` |
+| `/lifewatch-api/` | LifeWatch FastAPI root | Vite, `LIFEWATCH_API_URL` in `.env.local` | `deploy/nginx.conf.example` |
+| `/ltser-api/` | LTSER API base (`/api/v1`) | Vite, `LTSER_API_URL` in `.env.local` | `deploy/nginx.conf.example` |
 
 This mirrors the original applications, where the Shiny server and the Next.js server made
 the data requests on behalf of the browser. Neither API needs CORS settings.
 
 If the services must instead be called on another origin, set absolute URLs in
-`frontend/public/runtime-config.js` and add CORS to each service. For the LifeWatch FastAPI app:
+`public/runtime-config.js` and add CORS to each service. For the LifeWatch FastAPI app:
 
 ```python
 from fastapi.middleware.cors import CORSMiddleware
