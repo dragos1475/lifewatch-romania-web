@@ -1,0 +1,13 @@
+# Dependencies and build output
+node_modules/
+frontend/dist/
+frontend/dist-ssr/
+
+# Local configuration
+.env.local
+.env.*.local
+.claude/
+
+# System and logs
+.DS_Store
+*.log
