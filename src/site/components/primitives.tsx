@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { motion } from "motion/react";
 import { ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PageMotionGraphic, usePageMotionScene } from "./page-motion";
 
 export const SPRING = { type: "spring", stiffness: 300, damping: 30 } as const;
 
@@ -53,16 +54,26 @@ export function SectionHeader({ index, eyebrow, title, lede, aside, id }: { inde
   );
 }
 
-/** Page opening used by every inner page. */
+/** Page opening used by every inner page. On wide screens the page scene fills the free space to the
+ *  right of the text, at the height of the text, so it never makes the intro taller. */
 export function PageIntro({ eyebrow, title, lede, children, crumbs }: { eyebrow: string; title: ReactNode; lede?: ReactNode; children?: ReactNode; crumbs?: ReactNode }) {
+  const scene = usePageMotionScene();
   return (
     <Container className="pt-6 pb-6 sm:pt-9 sm:pb-8">
       {crumbs}
       <div className="grid gap-5 lg:grid-cols-12 lg:items-end">
-        <div className="grid min-w-0 content-start gap-2.5 lg:col-span-8">
-          <Eyebrow>{eyebrow}</Eyebrow>
-          <h1 className="font-display text-[34px] leading-[1.04] font-medium tracking-[-0.04em] text-balance sm:text-[44px]">{title}</h1>
-          {lede ? <p className="max-w-[80ch] text-[15.5px] leading-[1.65] text-pretty text-muted">{lede}</p> : null}
+        <div className={cn("flex min-w-0 gap-8", children ? "lg:col-span-8" : "lg:col-span-12")}>
+          <div className="grid min-w-0 flex-[0_1_80ch] content-start gap-2.5">
+            <Eyebrow>{eyebrow}</Eyebrow>
+            <h1 className="font-display text-[34px] leading-[1.04] font-medium tracking-[-0.04em] text-balance sm:text-[44px]">{title}</h1>
+            {lede ? <p className="max-w-[80ch] text-[15.5px] leading-[1.65] text-pretty text-muted">{lede}</p> : null}
+          </div>
+          {scene ? (
+            // A size container: the box takes the full text height and at most three times that in width.
+            <div className={cn("relative hidden min-w-[190px] flex-1 [container-type:size]", children ? "xl:block" : "lg:block")}>
+              <PageMotionGraphic scene={scene} className="absolute inset-y-0 right-0 w-[min(100cqw,300cqh)]" />
+            </div>
+          ) : null}
         </div>
         {children ? <div className="min-w-0 lg:col-span-4">{children}</div> : null}
       </div>

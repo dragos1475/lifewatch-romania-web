@@ -9,6 +9,7 @@ import { CopyValue, CreditedPhoto } from "../components/blocks";
 import { BulletList, Container, Crumbs, Eyebrow, ExternalLink } from "../components/primitives";
 import { ModuleList } from "../components/modules";
 import { Toc } from "../components/toc";
+import { PageMotionGraphic, usePageMotionScene } from "../components/page-motion";
 
 const osm = ([lon, lat]: [number, number]) => `https://www.openstreetmap.org/?mlat=${lat.toFixed(4)}&mlon=${lon.toFixed(4)}#map=13/${lat.toFixed(4)}/${lon.toFixed(4)}`;
 
@@ -57,6 +58,7 @@ function Sidebar({ station, toc }: { station: Station; toc: { id: string; title:
 }
 
 export function StationPage({ station }: { station: Station }) {
+  const scene = usePageMotionScene();
   const index = STATIONS.findIndex((s) => s.slug === station.slug);
   const prev = STATIONS[(index - 1 + STATIONS.length) % STATIONS.length];
   const next = STATIONS[(index + 1) % STATIONS.length];
@@ -68,16 +70,23 @@ export function StationPage({ station }: { station: Station }) {
       <Crumbs items={[{ label: "Infrastructură", node: <Link to="infrastructura" className="hover:text-foreground">Infrastructură</Link> }, { label: station.short }]} />
       <div className="grid gap-6 lg:grid-cols-12 lg:gap-10">
         <div className="grid min-w-0 content-start gap-6 lg:col-span-8">
-          <header className="grid gap-2.5">
-            <Eyebrow>Stație de cercetare · din {station.founded}</Eyebrow>
-            <h1 className="text-[32px] leading-[1.05] font-semibold tracking-[-0.03em] text-balance sm:text-[42px]">{station.name}</h1>
-            <p className="text-[13px] text-subtle">{station.setting} · județul {station.county}</p>
-            <p className="max-w-[75ch] text-[16px] leading-[1.6] text-pretty text-muted">{station.summary}</p>
-            <ul className="flex flex-wrap gap-1.5 pt-1">
-              {station.focus.map((f) => (
-                <li key={f} className="rounded-md border border-border bg-surface px-2 py-0.5 text-[12.5px] text-muted">{f}</li>
-              ))}
-            </ul>
+          <header className="flex gap-8">
+            <div className="grid min-w-0 flex-[0_1_75ch] gap-2.5">
+              <Eyebrow>Stație de cercetare · din {station.founded}</Eyebrow>
+              <h1 className="text-[32px] leading-[1.05] font-semibold tracking-[-0.03em] text-balance sm:text-[42px]">{station.name}</h1>
+              <p className="text-[13px] text-subtle">{station.setting} · județul {station.county}</p>
+              <p className="max-w-[75ch] text-[16px] leading-[1.6] text-pretty text-muted">{station.summary}</p>
+              <ul className="flex flex-wrap gap-1.5 pt-1">
+                {station.focus.map((f) => (
+                  <li key={f} className="rounded-md border border-border bg-surface px-2 py-0.5 text-[12.5px] text-muted">{f}</li>
+                ))}
+              </ul>
+            </div>
+            {scene ? (
+              <div className="relative hidden min-w-[190px] flex-1 xl:block">
+                <PageMotionGraphic scene={scene} className="absolute top-1/2 right-0 aspect-[2/1] max-h-full w-full max-w-[360px] -translate-y-1/2" />
+              </div>
+            ) : null}
           </header>
 
           {station.sections.map((section) => (
