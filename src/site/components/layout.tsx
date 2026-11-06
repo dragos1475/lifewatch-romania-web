@@ -94,8 +94,8 @@ function Header({ onSearch }: { onSearch: () => void }) {
           {NAV.map((n) => {
             const active = current === n.key;
             return (
-              <Link key={n.key} to={n.key} aria-current={active ? "page" : undefined} className="relative rounded-full px-3.5 py-2 text-[12px] font-medium text-muted transition-colors hover:text-foreground aria-[current=page]:text-accent">
-                {active ? <motion.span layoutId="site-nav" transition={SPRING} className="absolute inset-0 rounded-full bg-accent-soft" /> : null}
+              <Link key={n.key} to={n.key} aria-current={active ? "page" : undefined} className="relative rounded-lg px-3.5 py-2 text-[12px] font-medium text-muted transition-colors hover:text-foreground aria-[current=page]:text-accent">
+                {active ? <motion.span layoutId="site-nav" transition={SPRING} className="absolute inset-0 rounded-lg bg-accent-soft" /> : null}
                 <span className="relative">{n.label}</span>
               </Link>
             );
@@ -105,7 +105,7 @@ function Header({ onSearch }: { onSearch: () => void }) {
           <button
             type="button"
             onClick={onSearch}
-            className="hidden h-9 w-[200px] items-center gap-2 rounded-full border border-border bg-surface px-3 text-[13px] text-subtle shadow-card transition-colors hover:border-border-strong hover:text-muted md:flex"
+            className="hidden h-9 w-[200px] items-center gap-2 rounded-lg border border-border bg-surface px-3 text-[13px] text-subtle shadow-card transition-colors hover:border-border-strong hover:text-muted md:flex"
           >
             <Search className="size-3.5" strokeWidth={1.75} />
             <span className="flex-1 text-left">Caută</span>
